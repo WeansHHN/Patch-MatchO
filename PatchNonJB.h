@@ -1,4 +1,3 @@
-#include "dobby.h"
 #include <Foundation/Foundation.h>
 #include <UIKit/UIKit.h>
 
@@ -33,12 +32,20 @@ BOOL DeactiveCodePatch(const char* machoPath, uint64_t vaddr, const char* patch)
 void* HookOffset(const char* machoPath, uint64_t vaddr, void* replace);
 NSString* StaticInlineHookPatch(char* machoPath, uint64_t vaddr, char* patch);
 
-#define WeansHHN(x) \
+#define WeansHHN(x, y, z) \
 { \
-    NSString* result_##y = HookOffset(("Frameworks/UnityFramework.framework/UnityFramework"), x, nullptr); \
-}
+    NSString* result_##y = StaticInlineHookPatch(("Frameworks/UnityFramework.framework/UnityFramework"), x, nullptr); \
+    if (result_##y) { \
+        void* result = HookOffset(("Frameworks/UnityFramework.framework/UnityFramework"), x, (void *) y); \
+        *(void **) (&z) = (void*) result; \
+    } \
+} 
 
-#define WeansHHNAnogs(x) \
+#define WeansHHNAnogs(x, y, z) \
 { \
-    NSString* result_##y = HookOffset(("Frameworks/anogs.framework/anogs"), x, nullptr); \
-}
+    NSString* result_##y = StaticInlineHookPatch(("Frameworks/anogs.framework/anogs"), x, nullptr); \
+    if (result_##y) { \
+        void* result = HookOffset(("Frameworks/anogs.framework/anogs"), x, (void *) y); \
+        *(void **) (&z) = (void*) result; \
+    } \
+} 
