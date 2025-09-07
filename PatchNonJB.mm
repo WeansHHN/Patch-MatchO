@@ -418,7 +418,7 @@ uint64_t calc_patch_hash(uint64_t vaddr, const char* patch)
     return [[[NSString stringWithUTF8String:patch] lowercaseString] hash] ^ vaddr;
 }
 
-/*NSString* StaticInlineHookPatch(char* machoPath, uint64_t vaddr, char* patch)
+NSString* StaticInlineHookPatch(char* machoPath, uint64_t vaddr, char* patch)
 {
     static NSMutableDictionary* gStaticInlineHookMachO = [[NSMutableDictionary alloc] init];
     
@@ -582,8 +582,8 @@ uint64_t calc_patch_hash(uint64_t vaddr, const char* patch)
         return @"??????!\ncan not write to file!";
     
     gStaticInlineHookMachO[path] = savePath;
-    return @"Địa chỉ này chưa được ký. Tệp vá sẽ được tạo trong thư mục Documents/static-inline-hook của APP. Vui lòng thay thế tất cả các tệp trong thư mục này thành thư mục .app trong ipa và ký lại cài đặt.!\nThe offset has not been patched, the patched file will be generated in the Documents/static-inline-hook directory of the APP, please replace all the files in this directory to the .app directory in the ipa and re-sign and reinstall!";
-}*/
+    return @"";//*/
+} 
 
 void* find_module_by_path(const char* machoPath)
 {
@@ -642,13 +642,11 @@ void* HookOffset(const char* machoPath, uint64_t vaddr, void* replace)
 {
     void* base = find_module_by_path(machoPath);
     if(!base) {
-        //showAlertWithText(NSSENCRYPT("cannot find module!"));
         return NULL;
     }
     
     StaticInlineHookBlock* hookBlock = find_hook_block(base, vaddr);
     if(!hookBlock) {
-        //showAlertWithText(NSSENCRYPT("cannot find hook block!"));
         return NULL;
     }
     
@@ -660,18 +658,15 @@ BOOL ActiveCodePatch(const char* machoPath, uint64_t vaddr, const char* patch)
 {
     void* base = find_module_by_path(machoPath);
     if(!base) {
-        //showAlertWithText(NSSENCRYPT("cannot find module!"));
         return NO;
     }
     
     StaticInlineHookBlock* hookBlock = find_hook_block(base, vaddr&~3);
     if(!hookBlock) {
-        showAlertWithText(NSSENCRYPT("ERROR"));
         return NO;
     }
     
     if(hookBlock->patch_hash != calc_patch_hash(vaddr, patch)) {
-        showAlertWithText(NSSENCRYPT("ERROR"));
         return NO;
     }
 
